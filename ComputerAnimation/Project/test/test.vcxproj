@@ -19,27 +19,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\basic.frag" />
-    <None Include="shader\basic.vert" />
-    <None Include="shader\basic.vs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Car_Animation.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Car_Animation.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Wheel_Animation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Car_Animation.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Wheel_Animation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\basic.frag" />
+    <None Include="shader\basic.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{6A785C35-201E-4A6C-AB76-59BE1DCA1B95}</ProjectGuid>
-    <RootNamespace>Homework0</RootNamespace>
+    <ProjectGuid>{9811628A-030C-4B60-83BA-082DC5BA9E27}</ProjectGuid>
+    <RootNamespace>test</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -76,23 +77,23 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\opengl\OPENGL.props" />
-    <Import Project="..\..\..\..\..\opengl\NANOGUI.props" />
+    <Import Project="E:\Github\opengl\OPENGL.props" />
+    <Import Project="E:\Github\opengl\NANOGUI.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\opengl\OPENGL.props" />
-    <Import Project="..\..\..\..\..\opengl\NANOGUI.props" />
+    <Import Project="E:\Github\opengl\OPENGL.props" />
+    <Import Project="E:\Github\opengl\NANOGUI.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\opengl\OPENGL.props" />
-    <Import Project="..\..\..\..\..\opengl\NANOGUI.props" />
+    <Import Project="E:\Github\opengl\OPENGL.props" />
+    <Import Project="E:\Github\opengl\NANOGUI.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\opengl\OPENGL.props" />
-    <Import Project="..\..\..\..\..\opengl\NANOGUI.props" />
+    <Import Project="E:\Github\opengl\OPENGL.props" />
+    <Import Project="E:\Github\opengl\NANOGUI.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -105,7 +106,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

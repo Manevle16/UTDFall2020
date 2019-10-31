@@ -6,6 +6,8 @@ Lighting* Renderer::m_lightings = new Lighting();
 
 Car_Animation* Renderer::m_car_animation = new Car_Animation();
 
+Wheel_Animation* Renderer::m_wheel_animation = new Wheel_Animation();
+
 nanogui::Screen* Renderer::m_nanogui_screen = nullptr;
 
 bool Renderer::keys[1024];
@@ -132,6 +134,7 @@ void Renderer::init()
 
 	m_lightings->init();
 	m_car_animation->init();
+	m_wheel_animation->init();
 	nanogui_init(this->m_window);
 }
 
@@ -189,20 +192,25 @@ void Renderer::load_models()
 	Object arrow_object("./objs/arrow.obj");
 	arrow_object.obj_name = "axis_arrow";
 
-	Object car_object("./objs/car.obj");
+	Object car_object("./objs/car_no_wheels.obj");
 	car_object.obj_name = "car";
+
+	Object wheel_object("./objs/wheel.obj");
+	wheel_object.obj_name = "wheel";
 
 
 	bind_vaovbo(cube_object);
 	bind_vaovbo(plane_object);
 	bind_vaovbo(arrow_object);
 	bind_vaovbo(car_object);
+	bind_vaovbo(wheel_object);
 	
 	// Here we only load one model
 	obj_list.push_back(cube_object);
 	obj_list.push_back(plane_object);
 	obj_list.push_back(arrow_object);
 	obj_list.push_back(car_object);
+	obj_list.push_back(wheel_object);
 }
 
 void Renderer::draw_scene(Shader& shader)
@@ -222,7 +230,7 @@ void Renderer::draw_scene(Shader& shader)
 	draw_axis(shader, world_identity_obj_mat);
 	draw_plane(shader);
 
-	draw_car(shader, m_car_animation);
+	draw_car(shader, m_car_animation, m_wheel_animation);
 }
 
 void Renderer::camera_move()
@@ -358,26 +366,41 @@ void Renderer::draw_plane(Shader& shader)
 	draw_object(shader, *plane_obj);
 }
 
-void Renderer::draw_car(Shader& shader, Car_Animation* m_bone_animation)
+void Renderer::draw_car(Shader& shader, Car_Animation* m_bone_animation, Wheel_Animation* m_wheel_animation)
 {
 	Object *car_obj = nullptr;
+	Object* wheel_obj = nullptr;
 	for (unsigned int i = 0; i < obj_list.size(); i++)
 	{
 		if (obj_list[i].obj_name == "car") {
 			car_obj = &obj_list[i];
 		}
+		else if (obj_list[i].obj_name == "wheel") {
+			wheel_obj = &obj_list[i];
+		}
 	}
-	if (car_obj == nullptr)
+	if (car_obj == nullptr || wheel_obj == nullptr)
 		return;
 	
-	m_bone_animation->update(delta_time);
+	m_car_animation->update(delta_time);
+	m_wheel_animation->update(delta_time);
 	
-	// Draw root bone
+	// Draw car
 	glm::mat4 car_obj_mat = glm::mat4(1.0f);
 	car_obj_mat = glm::translate(car_obj_mat, m_car_animation->position);
+	glm::quat car_quat = glm::quat(glm::radians(m_car_animation->rotation));
+	glm::mat4 car_rot_mat = glm::toMat4(car_quat);
+	car_obj_mat = car_obj_mat * car_rot_mat;
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(car_obj_mat));
-	car_obj->obj_color = glm::vec4(0, 0, .5, .5);
+	car_obj->obj_color = glm::vec4(.2, 0, .3, 1);
 	draw_object(shader, *car_obj);
+
+	// Draw Wheels
+	glm::mat4 wheel_obj_mat = glm::mat4(1.0f);
+	wheel_obj_mat = glm::translate(wheel_obj_mat, m_wheel_animation->position_vector[0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(wheel_obj_mat));
+	wheel_obj->obj_color = glm::vec4(0.1, 0.1, 0.1, 1);
+	draw_object(shader, *wheel_obj);
 }
 
 void Renderer::bind_vaovbo(Object &cur_obj)

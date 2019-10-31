@@ -18,8 +18,8 @@
 #include "Camera.h"
 #include "Object.h"
 #include "Lighting.h"
-
 #include "Car_Animation.h"
+#include "Wheel_Animation.h"
 
 class Renderer
 {
@@ -33,6 +33,8 @@ public:
 	static nanogui::Screen* m_nanogui_screen;
 
 	static Car_Animation* m_car_animation;
+	
+	static Wheel_Animation* m_wheel_animation;
 
 	std::vector<Object> obj_list;
 
@@ -66,7 +68,7 @@ public:
 
 	void draw_axis(Shader& shader, const glm::mat4 axis_obj_mat);
 	void draw_plane(Shader& shader);
-	void draw_car(Shader& shader, Car_Animation* m_car_animation);
+	void draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_Animation* m_wheel_animation);
 
 	void bind_vaovbo(Object &cur_obj);
 

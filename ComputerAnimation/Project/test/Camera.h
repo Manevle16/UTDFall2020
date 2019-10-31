@@ -53,7 +53,7 @@ public:
 
 	// Camera parameter initialization
 	Camera(
-		glm::vec3 position_ = glm::vec3(0, 5, 15),
+		glm::vec3 position_ = glm::vec3(0, 3, 10),
 		glm::vec3 front_ = glm::vec3(0, 0, -1),
 		glm::vec3 up_ = glm::vec3(0, 1, 0),
 		glm::vec3 right_ = glm::vec3(1, 0, 0),
