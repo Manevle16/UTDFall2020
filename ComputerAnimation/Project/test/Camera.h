@@ -7,21 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-enum Camera_Movement {
-	FORWARD,
-	BACKWARD,
-	LEFT,
-	RIGHT,
-	UP,
-	DOWN,
-	ROTATE_X_UP,
-	ROTATE_X_DOWN,
-	ROTATE_Y_UP,
-	ROTATE_Y_DOWN,
-	ROTATE_Z_UP,
-	ROTATE_Z_DOWN,
-};
-
 class Camera {
 public:
 	// Camera view parameters
@@ -86,37 +71,13 @@ public:
 		this->up = ori_up;
 		this->right = ori_right;
 		this->zoom = ori_zoom;
+	//	rotate_y(-90);
 	}
 
-	void process_keyboard(Camera_Movement direction, float delta_time)
-	{
-		float move_velocity = delta_time * 10;
-		float rotate_velocity = delta_time * 50;
+	
 
-		if (direction == FORWARD)
-			this->position += this->front * move_velocity;
-		if (direction == BACKWARD)
-			this->position -= this->front * move_velocity;
-		if (direction == LEFT)
-			this->position -= this->right * move_velocity;
-		if (direction == RIGHT)
-			this->position += this->right * move_velocity;
-		if (direction == UP)
-			this->position += this->up * move_velocity;
-		if (direction == DOWN)
-			this->position -= this->up * move_velocity;
-		if (direction == ROTATE_X_UP)
-			rotate_x(rotate_velocity);
-		if (direction == ROTATE_X_DOWN)
-			rotate_x(-rotate_velocity);
-		if (direction == ROTATE_Y_UP)
-			rotate_y(rotate_velocity);
-		if (direction == ROTATE_Y_DOWN)
-			rotate_y(-rotate_velocity);
-		if (direction == ROTATE_Z_UP)
-			rotate_z(rotate_velocity);
-		if (direction == ROTATE_Z_DOWN)
-			rotate_z(-rotate_velocity);
+	void move_camera(glm::vec3 movement) {
+		this->position += movement;
 	}
 
 	// Rotate specific angle along local camera system(LCS)

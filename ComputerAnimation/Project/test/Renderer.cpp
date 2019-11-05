@@ -198,12 +198,16 @@ void Renderer::load_models()
 	Object wheel_object("./objs/wheel.obj");
 	wheel_object.obj_name = "wheel";
 
+	Object tree_object("./objs/tree.obj");
+	tree_object.obj_name = "tree";
+
 
 	bind_vaovbo(cube_object);
 	bind_vaovbo(plane_object);
 	bind_vaovbo(arrow_object);
 	bind_vaovbo(car_object);
 	bind_vaovbo(wheel_object);
+	bind_vaovbo(tree_object);
 	
 	// Here we only load one model
 	obj_list.push_back(cube_object);
@@ -211,6 +215,7 @@ void Renderer::load_models()
 	obj_list.push_back(arrow_object);
 	obj_list.push_back(car_object);
 	obj_list.push_back(wheel_object);
+	obj_list.push_back(tree_object);
 }
 
 void Renderer::draw_scene(Shader& shader)
@@ -229,24 +234,33 @@ void Renderer::draw_scene(Shader& shader)
 	glm::mat4 world_identity_obj_mat = glm::mat4(1.0f);
 	draw_axis(shader, world_identity_obj_mat);
 	draw_plane(shader);
+	draw_environment(shader);
 
 	draw_car(shader, m_car_animation, m_wheel_animation);
 }
 
 void Renderer::camera_move()
 {
+	/*
 	float current_frame = glfwGetTime();
 	delta_time = current_frame - last_frame;
 	last_frame = current_frame;
 	// Camera controls
-	if (keys[GLFW_KEY_W])
-		m_camera->process_keyboard(FORWARD, delta_time);
-	if (keys[GLFW_KEY_S])
+	if (keys[GLFW_KEY_W]) {
+		m_car_animation->move_car(FORWARD, delta_time, m_camera);
+	}
+	if (keys[GLFW_KEY_S]) {
 		m_camera->process_keyboard(BACKWARD, delta_time);
-	if (keys[GLFW_KEY_A])
+		m_car_animation->move_car(BACKWARD, delta_time, m_camera);
+	}
+	if (keys[GLFW_KEY_A]) {
 		m_camera->process_keyboard(LEFT, delta_time);
-	if (keys[GLFW_KEY_D])
+		m_car_animation->move_car(LEFT, delta_time, m_camera);
+	}
+	if (keys[GLFW_KEY_D]) {
 		m_camera->process_keyboard(RIGHT, delta_time);
+		m_car_animation->move_car(RIGHT, delta_time, m_camera);
+	}
 	if (keys[GLFW_KEY_Q])
 		m_camera->process_keyboard(UP, delta_time);
 	if (keys[GLFW_KEY_E])
@@ -263,7 +277,7 @@ void Renderer::camera_move()
 		m_camera->process_keyboard(ROTATE_Z_UP, delta_time);
 	if (keys[GLFW_KEY_O])
 		m_camera->process_keyboard(ROTATE_Z_DOWN, delta_time);
-
+	*/
 }
 
 void Renderer::draw_object(Shader& shader, Object& object)
@@ -361,12 +375,36 @@ void Renderer::draw_plane(Shader& shader)
 		return;
 
 	plane_obj->obj_mat =  glm::mat4(1.0f);
-	plane_obj->obj_mat = glm::scale(plane_obj->obj_mat, glm::vec3(10, 10, 10));
+	plane_obj->obj_mat = glm::scale(plane_obj->obj_mat, glm::vec3(500, 500, 500));
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(plane_obj->obj_mat));
 	draw_object(shader, *plane_obj);
 }
 
-void Renderer::draw_car(Shader& shader, Car_Animation* m_bone_animation, Wheel_Animation* m_wheel_animation)
+void Renderer::draw_environment(Shader& shader)
+{
+	Object* tree_obj = nullptr;
+	for (unsigned int i = 0; i < obj_list.size(); i++)
+	{
+		if (obj_list[i].obj_name == "tree") {
+			tree_obj = &obj_list[i];
+		}
+	}
+	if (tree_obj == nullptr)
+		return;
+
+	for (int i = 0; i < 100; i++) {
+		tree_obj->obj_mat = glm::mat4(1.0f);
+		tree_obj->obj_mat = glm::translate(tree_obj->obj_mat, { 5.0f, 0.0f, -30.0f * i });
+		tree_obj->obj_mat = glm::scale(tree_obj->obj_mat, { .3, .3, .3 });
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(tree_obj->obj_mat));
+		tree_obj->obj_color = glm::vec4(((double)rand() / (double)(RAND_MAX)), ((double)rand() / (double)(RAND_MAX)), ((double)rand() / (double)(RAND_MAX)), 1);
+		draw_object(shader, *tree_obj);
+	}
+	
+
+}
+
+void Renderer::draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_Animation* m_wheel_animation)
 {
 	Object *car_obj = nullptr;
 	Object* wheel_obj = nullptr;
@@ -375,32 +413,90 @@ void Renderer::draw_car(Shader& shader, Car_Animation* m_bone_animation, Wheel_A
 		if (obj_list[i].obj_name == "car") {
 			car_obj = &obj_list[i];
 		}
-		else if (obj_list[i].obj_name == "wheel") {
-			wheel_obj = &obj_list[i];
-		}
 	}
-	if (car_obj == nullptr || wheel_obj == nullptr)
+	if (car_obj == nullptr)
 		return;
+
+	float current_frame = glfwGetTime();
+	delta_time = current_frame - last_frame;
+	last_frame = current_frame;
+
+	if (keys[GLFW_KEY_W]) {
+		m_car_animation->move_car(FORWARD, delta_time, m_camera);
+	}
+	if (keys[GLFW_KEY_S]) {
+		m_car_animation->move_car(BACKWARD, delta_time, m_camera);
+	}
+	if (keys[GLFW_KEY_SPACE]) {
+		m_car_animation->move_car(BRAKE, delta_time, m_camera);
+	}
+	if (!keys[GLFW_KEY_W] && !keys[GLFW_KEY_S] && !keys[GLFW_KEY_SPACE]) {
+		m_car_animation->move_car(NONE, delta_time, m_camera);
+	}
 	
-	m_car_animation->update(delta_time);
-	m_wheel_animation->update(delta_time);
+	m_car_animation->update(delta_time, m_camera);
+//	m_wheel_animation->update(delta_time);
 	
 	// Draw car
 	glm::mat4 car_obj_mat = glm::mat4(1.0f);
 	car_obj_mat = glm::translate(car_obj_mat, m_car_animation->position);
-	glm::quat car_quat = glm::quat(glm::radians(m_car_animation->rotation));
+	glm::quat car_quat = glm::quat(glm::radians(glm::vec3( m_car_animation->rotation.x, m_car_animation->rotation.y + 180.0, m_car_animation->rotation.z )));
 	glm::mat4 car_rot_mat = glm::toMat4(car_quat);
 	car_obj_mat = car_obj_mat * car_rot_mat;
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(car_obj_mat));
 	car_obj->obj_color = glm::vec4(.2, 0, .3, 1);
 	draw_object(shader, *car_obj);
 
-	// Draw Wheels
-	glm::mat4 wheel_obj_mat = glm::mat4(1.0f);
-	wheel_obj_mat = glm::translate(wheel_obj_mat, m_wheel_animation->position_vector[0]);
-	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(wheel_obj_mat));
+	draw_wheels(shader, m_car_animation, m_wheel_animation);
+}
+
+void Renderer::draw_wheels(Shader& shader, Car_Animation* m_car_animation, Wheel_Animation* m_wheel_animation) {
+	Object* wheel_obj = nullptr;
+	for (unsigned int i = 0; i < obj_list.size(); i++)
+	{
+		if (obj_list[i].obj_name == "wheel") {
+			wheel_obj = &obj_list[i];
+		}
+	}
+	if (wheel_obj == nullptr)
+		return;
+
+	
+
+
+	for (int i = 0; i < 4; i++) {
+		glm::mat4 wheel_obj_mat = glm::mat4(1.0f);
+		wheel_obj_mat = glm::translate(wheel_obj_mat, m_car_animation->position);
+		glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(m_car_animation->rotation.x, m_car_animation->rotation.y, m_car_animation->rotation.z))));
+		wheel_obj_mat = wheel_obj_mat * rotation;
+		wheel_obj_mat = glm::translate(wheel_obj_mat, m_wheel_animation->position_vector[i]);
+		
+		glm::mat4 orientation = glm::toMat4(glm::quat(glm::radians(m_wheel_animation->rotation_vector[i])));
+		wheel_obj_mat = wheel_obj_mat * orientation;
+		
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(wheel_obj_mat));
+		wheel_obj->obj_color = glm::vec4(0.1, 0.1, 0.1, 1);
+		draw_object(shader, *wheel_obj);
+	}
+	/*
+	// Draw Front Left Wheel
+	glm::mat4 front_left_wheel_obj_mat = glm::mat4(1.0f);
+	front_left_wheel_obj_mat = glm::translate(front_left_wheel_obj_mat, m_wheel_animation->position_vector[0]);
+	front_left_wheel_obj_mat = glm::translate(front_left_wheel_obj_mat, m_car_animation->position);
+	rotation = glm::toMat4(glm::quat(glm::radians(m_wheel_animation->rotation_vector[0])));
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(front_left_wheel_obj_mat));
 	wheel_obj->obj_color = glm::vec4(0.1, 0.1, 0.1, 1);
 	draw_object(shader, *wheel_obj);
+
+	// Draw Front Right Wheel
+	glm::mat4 front_right_wheel_obj_mat = glm::mat4(1.0f);
+	front_right_wheel_obj_mat = glm::translate(front_right_wheel_obj_mat, m_wheel_animation->position_vector[1]);
+	front_right_wheel_obj_mat = glm::translate(front_right_wheel_obj_mat, m_car_animation->position);
+	rotation = glm::toMat4(glm::quat(glm::radians(m_wheel_animation->rotation_vector[1])));
+	front_right_wheel_obj_mat = front_right_wheel_obj_mat * rotation;
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(front_right_wheel_obj_mat));
+	draw_object(shader, *wheel_obj);
+	*/
 }
 
 void Renderer::bind_vaovbo(Object &cur_obj)

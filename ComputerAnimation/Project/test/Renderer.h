@@ -68,8 +68,9 @@ public:
 
 	void draw_axis(Shader& shader, const glm::mat4 axis_obj_mat);
 	void draw_plane(Shader& shader);
+	void draw_environment(Shader& shader);
 	void draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_Animation* m_wheel_animation);
-
+	void draw_wheels(Shader& shader, Car_Animation* m_car_animation, Wheel_Animation* m_wheel_animation);
 	void bind_vaovbo(Object &cur_obj);
 
 	void setup_uniform_values(Shader& shader);
