@@ -31,7 +31,9 @@ void Wheel_Animation::rotateWheelsByVelocity(glm::vec3 v, int dir) {
 				rotation_vector[i].x += glm::length(v) / 2;
 			else
 				rotation_vector[i].x -= glm::length(v) / 2;
+			rotation_vector[i].x = fmod(rotation_vector[i].x, 360);
 		}
+		
 	}
 	else {
 		for (int i = 0; i < 4; i++) {
@@ -39,6 +41,7 @@ void Wheel_Animation::rotateWheelsByVelocity(glm::vec3 v, int dir) {
 				rotation_vector[i].x += glm::length(v) / 2;
 			else
 				rotation_vector[i].x -= glm::length(v) / 2;
+			rotation_vector[i].x = fmod(rotation_vector[i].x, 360);
 		}
 	}
 }

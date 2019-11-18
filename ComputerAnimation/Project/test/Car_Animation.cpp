@@ -7,7 +7,7 @@ Car_Animation::~Car_Animation(){}
 void Car_Animation::init() {
 	position = { 0.0f, 0.0f, 0.0f };
 	scale = { 1.0f, 1.0f, 1.0f };
-	rotation = { 0.0f, 90.0f, 0.0f };
+	rotation = { 0.0f, -40.0f, 0.0f };
 	
 }
 
@@ -81,6 +81,27 @@ void Car_Animation::move_car(int direction, float delta_time, Camera* m_camera, 
 			position = position + (delta_time * velocity);
 			m_camera->move_camera(delta_time * velocity);
 			break;
+		case LEFT:
+			if (m_wheel_animation->rotation_vector[0].y == 35)
+				break;
+
+			m_wheel_animation->rotation_vector[0].y += delta_time * 70;
+			m_wheel_animation->rotation_vector[1].y += delta_time * 70;
+			if (m_wheel_animation->rotation_vector[0].y > 35) {
+				m_wheel_animation->rotation_vector[0].y = 35;
+				m_wheel_animation->rotation_vector[1].y = 215;
+			}
+			break;
+		case RIGHT:
+			if (m_wheel_animation->rotation_vector[0].y == -35)
+				break;
+
+			m_wheel_animation->rotation_vector[0].y -= delta_time * 70;
+			m_wheel_animation->rotation_vector[1].y -= delta_time * 70;
+			if (m_wheel_animation->rotation_vector[0].y < -35) {
+				m_wheel_animation->rotation_vector[0].y = -35;
+				m_wheel_animation->rotation_vector[1].y = 145;
+			}
 		case NONE:
 			if (glm::length(velocity) == 0)
 				break;
