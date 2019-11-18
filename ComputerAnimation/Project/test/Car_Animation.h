@@ -9,6 +9,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "Camera.h";
+#include "Wheel_Animation.h";
 
 enum Car_Movement {
 	FORWARD,
@@ -27,7 +28,7 @@ public:
 
 	void init();
 	void reset();
-	void move_car(int direction, float delta_time, Camera* m_camera);
+	void move_car(int direction, float delta_time, Camera* m_camera, Wheel_Animation* m_wheel_animation);
 	void update(float delta_time, Camera* m_camera);
 
 	const float mass = 2689.6;
