@@ -434,7 +434,7 @@ void Renderer::draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_An
 		m_car_animation->move_car(NONE, delta_time, m_camera, m_wheel_animation);
 	}
 	
-	m_car_animation->update(delta_time, m_camera);
+//	m_car_animation->update(delta_time, m_camera);
 //	m_wheel_animation->update(delta_time);
 	
 	// Draw car

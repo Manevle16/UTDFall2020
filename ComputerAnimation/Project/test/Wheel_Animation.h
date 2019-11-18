@@ -18,6 +18,7 @@ public:
 
 	void init();
 	void update(float delta_time);
+	void rotateWheelsByVelocity(glm::vec3 v, int dir);
 
 	glm::vec3 scale;
 
