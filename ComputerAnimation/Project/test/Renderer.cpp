@@ -406,7 +406,7 @@ void Renderer::draw_environment(Shader& shader)
 
 void Renderer::draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_Animation* m_wheel_animation)
 {
-	Object *car_obj = nullptr;
+	Object* car_obj = nullptr;
 	Object* wheel_obj = nullptr;
 	for (unsigned int i = 0; i < obj_list.size(); i++)
 	{
@@ -436,7 +436,7 @@ void Renderer::draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_An
 	if (keys[GLFW_KEY_D]) {
 		m_car_animation->move_car(RIGHT, delta_time, m_camera, m_wheel_animation);
 	}
-	if (!keys[GLFW_KEY_W] && !keys[GLFW_KEY_S] && !keys[GLFW_KEY_SPACE]) {
+	if (!keys[GLFW_KEY_W] && !keys[GLFW_KEY_S] && !keys[GLFW_KEY_SPACE] && !keys[GLFW_KEY_A] && !keys[GLFW_KEY_D]) {
 		m_car_animation->move_car(NONE, delta_time, m_camera, m_wheel_animation);
 	}
 	

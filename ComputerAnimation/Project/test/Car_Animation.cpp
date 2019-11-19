@@ -7,13 +7,13 @@ Car_Animation::~Car_Animation(){}
 void Car_Animation::init() {
 	position = { 0.0f, 0.0f, 0.0f };
 	scale = { 1.0f, 1.0f, 1.0f };
-	rotation = { 0.0f, -40.0f, 0.0f };
+	rotation = { 0.0f, 0.0f, 0.0f };
 	
 }
 
 void Car_Animation::move_car(int direction, float delta_time, Camera* m_camera, Wheel_Animation* m_wheel_animation) {
 	
-	glm::vec3 rotation_mat = glm::vec3(-sin(glm::radians(rotation.y)), 0, -cos(glm::radians(rotation.y)));
+	glm::vec3 rotation_mat = glm::vec3(-sin(glm::radians(m_wheel_animation->rotation_vector[0].y)), 0, -cos(glm::radians(m_wheel_animation->rotation_vector[0].y)));
 	if(glm::length(rotation_mat) != 0)
 		rotation_mat = rotation_mat / glm::length(rotation_mat);
 
@@ -28,7 +28,7 @@ void Car_Animation::move_car(int direction, float delta_time, Camera* m_camera, 
 	
 	glm::vec3 long_force;
 	glm::vec3 accel;
-	int dir;
+	float dir;
 
 	switch (direction)
 	{
@@ -45,13 +45,10 @@ void Car_Animation::move_car(int direction, float delta_time, Camera* m_camera, 
 			long_force = -front_traction + drag_force + roll_force;
 			accel = long_force / mass;
 			velocity = velocity + (10 * delta_time * accel);
-		
-			
 			//std::cout << velocity.z << "  " << accel.z << "\n";
 			m_wheel_animation->rotateWheelsByVelocity(velocity, -1);
 			position = position + (delta_time * velocity);
 			m_camera->move_camera(delta_time * velocity);
-			
 			break;
 		case BRAKE:
 			if (glm::length(velocity) == 0)
@@ -102,24 +99,26 @@ void Car_Animation::move_car(int direction, float delta_time, Camera* m_camera, 
 				m_wheel_animation->rotation_vector[0].y = -35;
 				m_wheel_animation->rotation_vector[1].y = 145;
 			}
+			break;
 		case NONE:
 			if (glm::length(velocity) == 0)
 				break;
-			
-			long_force = glm::vec3(0, 0, 0) + drag_force + roll_force;
+
+			long_force = drag_force + roll_force;
 			accel = long_force / mass;
-			velocity = velocity + (10 * delta_time * accel);
-			//std::cout << velocity.z << "  " << accel.z << "\n";
+			velocity = (velocity + (10 * delta_time * accel));
+			velocity = rotation_mat*(glm::dot(velocity, rotation_mat) / (pow(glm::length(rotation_mat), 2)));
 			dir = glm::dot(rotation_mat, velocity) / (glm::length(rotation_mat) * glm::length(velocity));
-			if (dir == 1) {
+			std::cout << glm::to_string(velocity) << "  " << accel.z << " " << dir << "\n";
+			if (dir > 0) {
 				for (int i = 0; i < 4; i++)
 					m_wheel_animation->rotation_vector[i].x -= glm::length(velocity) / 2;
 			}
-			else if (dir == -1) {
+			else if (dir < -0) {
 				for (int i = 0; i < 4; i++)
 					m_wheel_animation->rotation_vector[i].x += glm::length(velocity) / 2;
 			}
-			position = position + (delta_time * velocity);
+			position = position + (delta_time * velocity );
 			m_camera->move_camera(delta_time * velocity);
 			break;
 		default:
