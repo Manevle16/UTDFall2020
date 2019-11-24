@@ -153,13 +153,11 @@ void Renderer::display(GLFWwindow* window)
 			is_scene_reset = false;
 		}
 
-		camera_move();
-
 		m_shader.use();
 			
-		setup_uniform_values(m_shader);
-
 		draw_scene(m_shader);
+
+		setup_uniform_values(m_shader);
 
 		m_nanogui_screen->drawWidgets();
 
@@ -423,35 +421,35 @@ void Renderer::draw_car(Shader& shader, Car_Animation* m_car_animation, Wheel_An
 	last_frame = current_frame;
 
 	if (keys[GLFW_KEY_W]) {
-		m_car_animation->move_car(FORWARD, delta_time, m_camera, m_wheel_animation);
+		m_car_animation->move_car(FORWARD, delta_time, m_wheel_animation);
 	}
 	if (keys[GLFW_KEY_S]) {
-		m_car_animation->move_car(BACKWARD, delta_time, m_camera, m_wheel_animation);
+		m_car_animation->move_car(BACKWARD, delta_time, m_wheel_animation);
 	}
 	if (keys[GLFW_KEY_SPACE]) {
-		m_car_animation->move_car(BRAKE, delta_time, m_camera, m_wheel_animation);
+		m_car_animation->move_car(BRAKE, delta_time, m_wheel_animation);
 	}
 	if (keys[GLFW_KEY_A]) {
-		m_car_animation->move_car(LEFT, delta_time, m_camera, m_wheel_animation);
+		m_car_animation->move_car(LEFT, delta_time, m_wheel_animation);
 	}
 	if (keys[GLFW_KEY_D]) {
-		m_car_animation->move_car(RIGHT, delta_time, m_camera, m_wheel_animation);
+		m_car_animation->move_car(RIGHT, delta_time, m_wheel_animation);
 	}
 	if (!keys[GLFW_KEY_W] && !keys[GLFW_KEY_S] && !keys[GLFW_KEY_SPACE] && !keys[GLFW_KEY_A] && !keys[GLFW_KEY_D]) {
-		m_car_animation->move_car(NONE, delta_time, m_camera, m_wheel_animation);
+		m_car_animation->move_car(NONE, delta_time, m_wheel_animation);
 	}
 	
 //	m_car_animation->update(delta_time, m_camera);
 //	m_wheel_animation->update(delta_time);
 	
 	// Draw car
-	glm::mat4 car_obj_mat = glm::mat4(1.0f);
+	glm::dmat4 car_obj_mat = glm::dmat4(1.0f);
 	car_obj_mat = glm::translate(car_obj_mat, m_car_animation->position);
 	glm::quat car_quat = glm::quat(glm::radians(glm::vec3( m_car_animation->rotation.x, m_car_animation->rotation.y + 180.0, m_car_animation->rotation.z )));
-	glm::mat4 car_rot_mat = glm::toMat4(car_quat);
+	glm::dmat4 car_rot_mat = glm::toMat4(car_quat);
 	car_obj_mat = car_obj_mat * car_rot_mat;
 	car_obj_mat = glm::scale(car_obj_mat, m_car_animation->scale);
-	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(car_obj_mat));
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(car_obj_mat)));
 	car_obj->obj_color = glm::vec4(.2, 0, .3, 1);
 	draw_object(shader, *car_obj);
 
@@ -473,18 +471,18 @@ void Renderer::draw_wheels(Shader& shader, Car_Animation* m_car_animation, Wheel
 
 
 	for (int i = 0; i < 4; i++) {
-		glm::mat4 wheel_obj_mat = glm::mat4(1.0f);
+		glm::dmat4 wheel_obj_mat = glm::dmat4(1.0f);
 		wheel_obj_mat = glm::translate(wheel_obj_mat, m_car_animation->position);
-		glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(m_car_animation->rotation.x, m_car_animation->rotation.y, m_car_animation->rotation.z))));
+		glm::dmat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(m_car_animation->rotation.x, m_car_animation->rotation.y, m_car_animation->rotation.z))));
 		wheel_obj_mat = wheel_obj_mat * rotation;
 		wheel_obj_mat = glm::translate(wheel_obj_mat, m_wheel_animation->position_vector[i]);
 		wheel_obj_mat = glm::translate(wheel_obj_mat, { 0.0, 0.32, 0.0 });
-		glm::mat4 orientation = glm::toMat4(glm::quat(glm::radians(m_wheel_animation->rotation_vector[i])));
+		glm::dmat4 orientation = glm::toMat4(glm::quat(glm::radians(m_wheel_animation->rotation_vector[i])));
 		wheel_obj_mat = wheel_obj_mat * orientation;
 		wheel_obj_mat = glm::translate(wheel_obj_mat, { 0.0, -0.32, 0.0 });
 		
 		
-		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(wheel_obj_mat));
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(wheel_obj_mat)));
 		wheel_obj->obj_color = glm::vec4(0.1, 0.1, 0.1, 1);
 		draw_object(shader, *wheel_obj);
 	}
@@ -532,11 +530,12 @@ void Renderer::bind_vaovbo(Object &cur_obj)
 
 void Renderer::setup_uniform_values(Shader& shader)
 {
+
 	// Camera uniform values
-	glUniform3f(glGetUniformLocation(shader.program, "camera_pos"), m_camera->position.x, m_camera->position.y, m_camera->position.z);
+	glUniform3f(glGetUniformLocation(shader.program, "camera_pos"), m_car_animation->position.x, m_car_animation->position.y + 3.0, m_car_animation->position.z + 10.0);
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "projection"), 1, GL_FALSE, glm::value_ptr(m_camera->get_projection_mat()));
-	glUniformMatrix4fv(glGetUniformLocation(shader.program, "view"), 1, GL_FALSE, glm::value_ptr(m_camera->get_view_mat()));
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "view"), 1, GL_FALSE, glm::value_ptr(m_camera->get_view_mat(m_car_animation, m_car_animation->rotation.y)));
 
 	// Light uniform values
 	glUniform1i(glGetUniformLocation(shader.program, "dir_light.status"), m_lightings->direction_light.status);

@@ -8,7 +8,6 @@
 #include <glm/gtc/type_ptr.hpp>	
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include "Camera.h";
 #include "Wheel_Animation.h";
 
 enum Car_Movement {
@@ -29,20 +28,19 @@ public:
 
 	void init();
 	void reset();
-	void move_car(int direction, float delta_time, Camera* m_camera, Wheel_Animation* m_wheel_animation);
-	void update(float delta_time, Camera* m_camera);
-	void move_car_without_throttle();
+	void move_car(int direction, double delta_time, Wheel_Animation* m_wheel_animation);
+	void update(float delta_time);
 
 	bool has_updated = false;
-	const float mass = 2689.6;
-	const float engine_force = 2000;
-	const float aero_drag = .34;
-	const float roll_res = 8.1;
-	glm::vec3 velocity = { 0.0f, 0.0f, 0.0f };
+	const double mass = 2689.6;
+	const double engine_force = 2000;
+	const double aero_drag = .34;
+	const double roll_res = 8.1;
+	glm::dvec3 velocity = { 0.0, 0.0, 0.0 };
 
-	glm::vec3 position;
-	glm::vec3 scale;
-	glm::vec3 rotation;
+	glm::dvec3 position;
+	glm::dvec3 scale;
+	glm::dvec3 rotation;
 
 	
 };

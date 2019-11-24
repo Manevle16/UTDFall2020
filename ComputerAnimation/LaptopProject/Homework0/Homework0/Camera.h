@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Car_Animation.h"
 
 class Camera {
 public:
@@ -83,7 +84,7 @@ public:
 	// Rotate specific angle along local camera system(LCS)
 	void rotate_x(float angle) 
 	{
-		glm::vec3 up = this->up;
+		glm::vec3 up = glm::vec3(0, 1, 0);
 		glm::mat4 rotation_mat(1);
 		rotation_mat = glm::rotate(rotation_mat, glm::radians(angle), this->right);
 		this->up = glm::normalize(glm::vec3(rotation_mat * glm::vec4(up, 1.0)));
@@ -92,7 +93,7 @@ public:
 
 	void rotate_y(float angle) 
 	{
-		glm::vec3 front = this->front;
+		glm::vec3 front = glm::vec3(0, 0, -1);
 		glm::mat4 rotation_mat(1);
 		rotation_mat = glm::rotate(rotation_mat, glm::radians(angle), this->up);
 		this->front = glm::normalize(glm::vec3(rotation_mat * glm::vec4(front, 1.0)));
@@ -109,9 +110,13 @@ public:
 	}
 
 	// Get camera view matrix
-	glm::mat4 get_view_mat()
-	{
-		this->view_mat = glm::lookAt(this->position, this->position + this->front, this->up);
+	glm::mat4 get_view_mat(Car_Animation* m_car_animation, float angle){
+		glm::dvec3 car_dir({ sin(glm::radians(angle)), 0.0, cos(glm::radians(angle)) });
+		glm::dvec3 cam_pos = m_car_animation->position + car_dir * 10.0 + glm::dvec3({0.0, 3.0, 0.0});
+		float new_x = cos(glm::radians(angle - 90)) * sqrt(pow(cam_pos.x, 2) + pow(cam_pos.z, 2));
+		float new_z = sin(glm::radians(angle - 90)) * sqrt(pow(cam_pos.x, 2) + pow(cam_pos.z, 2));
+		std::cout << new_x << " " << new_z << '\n';
+		this->view_mat = glm::lookAt(cam_pos, m_car_animation->position + glm::dvec3({ 0.0, 3.0, 0.0 }), glm::dvec3(this->up));
 		return this->view_mat;
 	}
 

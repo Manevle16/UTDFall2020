@@ -6,25 +6,25 @@ Wheel_Animation::~Wheel_Animation(){}
 
 void Wheel_Animation::init() {
 	position_vector = {
-		{-.8f, 0.0f, -1.4f },
-		{0.79f, 0.0f, -1.4f },
-		{-.8f, 0.0f, 1.21f },
-		{0.79f, 0.0f, 1.21f }
+		{-.8, 0.0, -1.4 },
+		{0.79, 0.0, -1.4 },
+		{-.8, 0.0, 1.21 },
+		{0.79, 0.0, 1.21 }
 	};
 
 	scale = { 1.0f, 1.0f, 1.0f };
 
 	rotation_vector = {
-		{0.0f, 0.0f, 0.0f },
-		{0.0f, 180.0f, 0.0f },
-		{0.0f, 0.0f, 0.0f },
-		{0.0f, 180.0f, 0.0f }
+		{0.0, 0.0, 0.0 },
+		{0.0, 180.0, 0.0 },
+		{0.0, 0.0, 0.0 },
+		{0.0, 180.0, 0.0 }
 	};
 }
 
 void Wheel_Animation::update(float delta_time) {};
 
-void Wheel_Animation::rotateWheelsByVelocity(glm::vec3 v, int dir) {
+void Wheel_Animation::rotateWheelsByVelocity(glm::dvec3 v, int dir) {
 	if (dir == 1) {
 		for (int i = 0; i < 4; i++) {
 			if (i % 2 != 0)

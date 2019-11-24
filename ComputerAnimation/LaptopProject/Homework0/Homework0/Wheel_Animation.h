@@ -18,11 +18,11 @@ public:
 
 	void init();
 	void update(float delta_time);
-	void rotateWheelsByVelocity(glm::vec3 v, int dir);
+	void rotateWheelsByVelocity(glm::dvec3 v, int dir);
 
-	glm::vec3 scale;
+	glm::dvec3 scale;
 
-	std::vector<glm::vec3> position_vector;
-	std::vector<glm::vec3> rotation_vector;
+	std::vector<glm::dvec3> position_vector;
+	std::vector<glm::dvec3> rotation_vector;
 };
 
