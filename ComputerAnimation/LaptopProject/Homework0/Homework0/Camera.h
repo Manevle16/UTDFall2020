@@ -115,7 +115,6 @@ public:
 		glm::dvec3 cam_pos = m_car_animation->position + car_dir * 10.0 + glm::dvec3({0.0, 3.0, 0.0});
 		float new_x = cos(glm::radians(angle - 90)) * sqrt(pow(cam_pos.x, 2) + pow(cam_pos.z, 2));
 		float new_z = sin(glm::radians(angle - 90)) * sqrt(pow(cam_pos.x, 2) + pow(cam_pos.z, 2));
-		std::cout << new_x << " " << new_z << '\n';
 		this->view_mat = glm::lookAt(cam_pos, m_car_animation->position + glm::dvec3({ 0.0, 3.0, 0.0 }), glm::dvec3(this->up));
 		return this->view_mat;
 	}

@@ -30,6 +30,7 @@ public:
 	void reset();
 	void move_car(int direction, double delta_time, Wheel_Animation* m_wheel_animation);
 	void update(float delta_time);
+	void rotate_car(float angle, float delta_time, Wheel_Animation* m_wheel_animation);
 
 	bool has_updated = false;
 	const double mass = 2689.6;
